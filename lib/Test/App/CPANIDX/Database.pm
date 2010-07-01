@@ -1,13 +1,15 @@
 package Test::App::CPANIDX::Database;
+BEGIN {
+  $Test::App::CPANIDX::Database::VERSION = '0.04';
+}
+
+# ABSTRACT: generate a test database for App::CPANIDX
 
 use strict;
 use warnings;
 use DBI;
 use File::Spec;
 use App::CPANIDX::Tables;
-use vars qw[$VERSION];
-
-$VERSION = '0.02';
 
 use constant CPANIDX => 'cpanidx.db';
 
@@ -33,14 +35,15 @@ sub new {
     auths => qq{INSERT INTO auths values (?,?,?)},
     mods  => qq{INSERT INTO mods values (?,?,?,?,?)},
     dists => qq{INSERT INTO dists values (?,?,?,?)},
-    timestamp => qq{INSERT INTO timestamp values(?)},
+    timestamp => qq{INSERT INTO timestamp values(?,?)},
   };
 
+  my $stamp = ( $self{time} || time() );
   my $data = [
     [ 'auths', 'FOOBAR', 'Foo Bar', 'foobar@cpan.org' ],
     [ 'mods',  'Foo::Bar','Foo-Bar','0.01','FOOBAR','0.01' ],
     [ 'dists', 'Foo-Bar','FOOBAR','F/FO/FOOBAR/Foo-Bar-0.01.tar.gz','0.01' ],
-    [ 'timestamp', ( $self{time} || time() ) ],
+    [ 'timestamp', $stamp, $stamp  ],
   ];
 
   foreach my $datum ( @{ $data } ) {
@@ -68,11 +71,17 @@ sub DESTROY {
 
 1;
 
+
 __END__
+=pod
 
 =head1 NAME
 
 Test::App::CPANIDX::Database - generate a test database for App::CPANIDX
+
+=head1 VERSION
+
+version 0.04
 
 =head1 SYNOPSIS
 
@@ -142,16 +151,6 @@ Returns the name of the database file that was generated.
 
 =back
 
-=head1 AUTHOR
-
-Chris C<BinGOs> Williams <chris@bingosnet.co.uk>
-
-=head1 LICENSE
-
-Copyright E<copy> Chris Williams
-
-This module may be used, modified, and distributed under the same terms as Perl itself. Please see the license that came with your Perl distribution for details.
-
 =head1 SEE ALSO
 
 L<App::CPANIDX>
@@ -160,4 +159,16 @@ L<App::CPANIDX::Tables>
 
 L<DBD::SQLite>
 
+=head1 AUTHOR
+
+Chris Williams <chris@bingosnet.co.uk>
+
+=head1 COPYRIGHT AND LICENSE
+
+This software is copyright (c) 2010 by Chris Williams.
+
+This is free software; you can redistribute it and/or modify it under
+the same terms as the Perl 5 programming language system itself.
+
 =cut
+
